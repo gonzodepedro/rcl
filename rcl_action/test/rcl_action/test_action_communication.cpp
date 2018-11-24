@@ -85,8 +85,8 @@ protected:
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_take_goal_request)
 {
-  test_msgs__action__Fibonacci_Goal_Request goal_request;
-  test_msgs__action__Fibonacci_Goal_Request__init(&goal_request);
+  test_msgs__action__Fibonacci_Action_Goal_Request goal_request;
+  test_msgs__action__Fibonacci_Action_Goal_Request__init(&goal_request);
 
   // Take request with null action server
   rmw_request_id_t request_header;
@@ -115,13 +115,13 @@ TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_take_goal_re
   // ret = rcl_action_take_goal_request(&this->action_server, &request_header, &goal_request);
   // EXPECT_EQ(ret, RCL_RET_OK);
 
-  test_msgs__action__Fibonacci_Goal_Request__fini(&goal_request);
+  test_msgs__action__Fibonacci_Action_Goal_Request__fini(&goal_request);
 }
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_send_goal_response)
 {
-  test_msgs__action__Fibonacci_Goal_Response goal_response;
-  test_msgs__action__Fibonacci_Goal_Response__init(&goal_response);
+  test_msgs__action__Fibonacci_Action_Goal_Response goal_response;
+  test_msgs__action__Fibonacci_Action_Goal_Response__init(&goal_response);
 
   // Send response with null action server
   rmw_request_id_t response_header;
@@ -150,7 +150,7 @@ TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_send_goal_re
   ret = rcl_action_send_goal_response(&this->action_server, &response_header, &goal_response);
   EXPECT_EQ(ret, RCL_RET_OK);
 
-  test_msgs__action__Fibonacci_Goal_Response__fini(&goal_response);
+  test_msgs__action__Fibonacci_Action_Goal_Response__fini(&goal_response);
 }
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_take_cancel_request)
@@ -225,8 +225,8 @@ TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_send_cancel_
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_take_result_request)
 {
-  test_msgs__action__Fibonacci_Result_Request result_request;
-  test_msgs__action__Fibonacci_Result_Request__init(&result_request);
+  test_msgs__action__Fibonacci_Action_Result_Request result_request;
+  test_msgs__action__Fibonacci_Action_Result_Request__init(&result_request);
 
   // Take request with null action server
   rmw_request_id_t request_header;
@@ -255,13 +255,13 @@ TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_take_result_
   // ret = rcl_action_take_result_request(&this->action_server, &request_header, &result_request);
   // EXPECT_EQ(ret, RCL_RET_OK);
 
-  test_msgs__action__Fibonacci_Result_Request__fini(&result_request);
+  test_msgs__action__Fibonacci_Action_Result_Request__fini(&result_request);
 }
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_send_result_response)
 {
-  test_msgs__action__Fibonacci_Result_Response result_response;
-  test_msgs__action__Fibonacci_Result_Response__init(&result_response);
+  test_msgs__action__Fibonacci_Action_Result_Response result_response;
+  test_msgs__action__Fibonacci_Action_Result_Response__init(&result_response);
 
   // Send response with null action server
   rmw_request_id_t response_header;
@@ -290,7 +290,7 @@ TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_send_result_
   ret = rcl_action_send_result_response(&this->action_server, &response_header, &result_response);
   EXPECT_EQ(ret, RCL_RET_OK);
 
-  test_msgs__action__Fibonacci_Result_Response__fini(&result_response);
+  test_msgs__action__Fibonacci_Action_Result_Response__fini(&result_response);
 }
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_publish_feedback)
