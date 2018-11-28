@@ -295,8 +295,8 @@ TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_send_result_
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_publish_feedback)
 {
-  test_msgs__action__Fibonacci_Feedback feedback;
-  test_msgs__action__Fibonacci_Feedback__init(&feedback);
+  test_msgs__action__Fibonacci_Action_Feedback feedback;
+  test_msgs__action__Fibonacci_Action_Feedback__init(&feedback);
 
   // Publish feedback with null action server
   rcl_ret_t ret = rcl_action_publish_feedback(nullptr, &feedback);
@@ -319,7 +319,7 @@ TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_publish_feed
   ret = rcl_action_publish_feedback(&this->action_server, &feedback);
   EXPECT_EQ(ret, RCL_RET_OK);
 
-  test_msgs__action__Fibonacci_Feedback__fini(&feedback);
+  test_msgs__action__Fibonacci_Action_Feedback__fini(&feedback);
 }
 
 TEST_F(CLASSNAME(TestActionCommunication, RMW_IMPLEMENTATION), test_publish_status)
