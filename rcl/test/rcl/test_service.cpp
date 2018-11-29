@@ -25,6 +25,7 @@
 #include "test_msgs/srv/primitives.h"
 
 #include "osrf_testing_tools_cpp/scope_exit.hpp"
+#include "osrf_testing_tools_cpp/memory_tools/gtest_quickstart.hpp"
 #include "rcl/error_handling.h"
 
 #ifdef RMW_IMPLEMENTATION
@@ -100,6 +101,14 @@ wait_for_service_to_be_ready(
 /* Basic nominal test of a service.
  */
 TEST_F(CLASSNAME(TestServiceFixture, RMW_IMPLEMENTATION), test_service_nominal) {
+
+  osrf_testing_tools_cpp::memory_tools::ScopedQuickstartGtest scoped_quickstart_gtest(true);
+
+  auto common = [](auto& service){service.print_backtrace();};
+
+  osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(common);
+  osrf_testing_tools_cpp::memory_tools::on_unexpected_free(common);
+
   rcl_ret_t ret;
   const rosidl_service_type_support_t * ts = ROSIDL_GET_SRV_TYPE_SUPPORT(
     test_msgs, srv, Primitives);
@@ -154,7 +163,9 @@ TEST_F(CLASSNAME(TestServiceFixture, RMW_IMPLEMENTATION), test_service_nominal) 
   client_request.uint8_value = 1;
   client_request.uint32_value = 2;
   int64_t sequence_number;
-  ret = rcl_send_request(&client, &client_request, &sequence_number);
+  EXPECT_NO_MEMORY_OPERATIONS({
+    ret = rcl_send_request(&client, &client_request, &sequence_number);
+  });
   EXPECT_EQ(sequence_number, 1);
   test_msgs__srv__Primitives_Request__fini(&client_request);
   ASSERT_EQ(RCL_RET_OK, ret) << rcl_get_error_string().str;
@@ -177,14 +188,18 @@ TEST_F(CLASSNAME(TestServiceFixture, RMW_IMPLEMENTATION), test_service_nominal) 
     test_msgs__srv__Primitives_Request service_request;
     test_msgs__srv__Primitives_Request__init(&service_request);
     rmw_request_id_t header;
-    ret = rcl_take_request(&service, &header, &service_request);
+    EXPECT_NO_MEMORY_OPERATIONS({
+      ret = rcl_take_request(&service, &header, &service_request);
+    });
     ASSERT_EQ(RCL_RET_OK, ret) << rcl_get_error_string().str;
 
     EXPECT_EQ(1, service_request.uint8_value);
     EXPECT_EQ(2UL, service_request.uint32_value);
     // Simulate a response callback by summing the request and send the response..
     service_response.uint64_value = service_request.uint8_value + service_request.uint32_value;
-    ret = rcl_send_response(&service, &header, &service_response);
+    EXPECT_NO_MEMORY_OPERATIONS({
+      ret = rcl_send_response(&service, &header, &service_response);
+    });
     ASSERT_EQ(RCL_RET_OK, ret) << rcl_get_error_string().str;
   }
   wait_for_service_to_be_ready(&service, 10, 100, success);
