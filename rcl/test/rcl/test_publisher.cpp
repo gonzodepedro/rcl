@@ -22,6 +22,7 @@
 
 #include "./failing_allocator_functions.hpp"
 #include "osrf_testing_tools_cpp/scope_exit.hpp"
+#include "osrf_testing_tools_cpp/memory_tools/gtest_quickstart.hpp"
 #include "rcl/error_handling.h"
 
 #ifdef RMW_IMPLEMENTATION
@@ -75,6 +76,13 @@ public:
 /* Basic nominal test of a publisher.
  */
 TEST_F(CLASSNAME(TestPublisherFixture, RMW_IMPLEMENTATION), test_publisher_nominal) {
+  osrf_testing_tools_cpp::memory_tools::ScopedQuickstartGtest scoped_quickstart_gtest(true);
+
+  auto common = [](auto& service){service.print_backtrace();};
+
+  osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(common);
+  osrf_testing_tools_cpp::memory_tools::on_unexpected_free(common);
+
   rcl_ret_t ret;
   rcl_publisher_t publisher = rcl_get_zero_initialized_publisher();
   const rosidl_message_type_support_t * ts =
@@ -92,7 +100,11 @@ TEST_F(CLASSNAME(TestPublisherFixture, RMW_IMPLEMENTATION), test_publisher_nomin
   test_msgs__msg__Primitives msg;
   test_msgs__msg__Primitives__init(&msg);
   msg.int64_value = 42;
-  ret = rcl_publish(&publisher, &msg);
+  auto test_str = std::string(1000000, 'x');
+  ASSERT_TRUE(rosidl_generator_c__String__assign(&msg.string_value, test_str.c_str()));
+  EXPECT_NO_MEMORY_OPERATIONS({
+    ret = rcl_publish(&publisher, &msg);
+  });
   test_msgs__msg__Primitives__fini(&msg);
   ASSERT_EQ(RCL_RET_OK, ret) << rcl_get_error_string().str;
 }

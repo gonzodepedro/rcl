@@ -25,6 +25,7 @@
 #include "rosidl_generator_c/string_functions.h"
 
 #include "osrf_testing_tools_cpp/scope_exit.hpp"
+#include "osrf_testing_tools_cpp/memory_tools/gtest_quickstart.hpp"
 #include "rcl/error_handling.h"
 
 #ifdef RMW_IMPLEMENTATION
@@ -114,6 +115,11 @@ wait_for_subscription_to_be_ready(
 /* Basic nominal test of a subscription.
  */
 TEST_F(CLASSNAME(TestSubscriptionFixture, RMW_IMPLEMENTATION), test_subscription_nominal) {
+  osrf_testing_tools_cpp::memory_tools::ScopedQuickstartGtest scoped_quickstart_gtest(true);
+  auto common = [](auto& service){service.print_backtrace();};
+  osrf_testing_tools_cpp::memory_tools::on_unexpected_malloc(common);
+  osrf_testing_tools_cpp::memory_tools::on_unexpected_free(common);
+
   rcl_ret_t ret;
   rcl_publisher_t publisher = rcl_get_zero_initialized_publisher();
   const rosidl_message_type_support_t * ts =
@@ -174,7 +180,9 @@ TEST_F(CLASSNAME(TestSubscriptionFixture, RMW_IMPLEMENTATION), test_subscription
     OSRF_TESTING_TOOLS_CPP_SCOPE_EXIT({
       test_msgs__msg__Primitives__fini(&msg);
     });
-    ret = rcl_take(&subscription, &msg, nullptr);
+    EXPECT_NO_MEMORY_OPERATIONS({
+      ret = rcl_take(&subscription, &msg, nullptr);
+    });
     ASSERT_EQ(RCL_RET_OK, ret) << rcl_get_error_string().str;
     ASSERT_EQ(42, msg.int64_value);
   }
